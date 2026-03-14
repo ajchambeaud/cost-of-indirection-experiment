@@ -5,7 +5,7 @@ const {
   deposit,
   transfer,
   getBalance,
-} = require("./helpers");
+} = require("../helpers");
 
 describe("Transfers", () => {
   async function setupTwoAccounts(balanceA = 1000, balanceB = 0) {

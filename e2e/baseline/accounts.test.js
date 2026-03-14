@@ -1,6 +1,6 @@
 const { describe, it, before, after } = require("node:test");
 const assert = require("node:assert/strict");
-const { createAccount, getBalance, deposit, withdraw } = require("./helpers");
+const { createAccount, getBalance, deposit, withdraw } = require("../helpers");
 
 describe("Accounts", () => {
   describe("POST /accounts", () => {

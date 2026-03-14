@@ -6,7 +6,7 @@ const {
   withdraw,
   transfer,
   getTransactions,
-} = require("./helpers");
+} = require("../helpers");
 
 describe("Transaction History", () => {
   async function setupAccountWithHistory() {

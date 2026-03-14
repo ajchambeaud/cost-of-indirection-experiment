@@ -1,6 +1,7 @@
 #!/bin/bash
-VARIANT=${1:?Usage: ./run-tests.sh <variant-dir> [port]}
+VARIANT=${1:?Usage: ./run-tests.sh <variant-dir> [port] [task]}
 PORT=${2:-3000}
+TASK=${3:-}
 
 echo "=== Testing variant: $VARIANT on port $PORT ==="
 
@@ -39,12 +40,37 @@ for i in $(seq 1 30); do
   sleep 0.2
 done
 
-# Run tests
-BASE_URL="http://localhost:$PORT" node --test e2e/**/*.test.js
-TEST_EXIT=$?
+# Run baseline tests
+echo ""
+echo "--- Baseline tests ---"
+BASE_URL="http://localhost:$PORT" node --test e2e/baseline/**/*.test.js
+BASELINE_EXIT=$?
+
+# Run task tests if specified
+TASK_EXIT=0
+if [ -n "$TASK" ] && [ -d "e2e/tasks/$TASK" ]; then
+  echo ""
+  echo "--- Task tests: $TASK ---"
+  BASE_URL="http://localhost:$PORT" node --test "e2e/tasks/$TASK/**/*.test.js"
+  TASK_EXIT=$?
+fi
 
 # Cleanup
 kill $SERVER_PID 2>/dev/null
 wait $SERVER_PID 2>/dev/null || true
 
-exit $TEST_EXIT
+if [ $BASELINE_EXIT -ne 0 ]; then
+  echo ""
+  echo "FAIL: Baseline tests failed (regression)"
+  exit 1
+fi
+
+if [ $TASK_EXIT -ne 0 ]; then
+  echo ""
+  echo "FAIL: Task tests failed"
+  exit 1
+fi
+
+echo ""
+echo "PASS: All tests passed"
+exit 0
