@@ -1,0 +1,20 @@
+{
+  "name": "variant-3-multi-light",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/app.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "better-sqlite3": "^11.6.0",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "@types/express": "^4.17.0",
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/uuid": "^10.0.0",
+    "@types/node": "^22.0.0"
+  }
+}

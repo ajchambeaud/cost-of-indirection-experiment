@@ -1,0 +1,10 @@
+{
+  "name": "complexity-test",
+  "version": "1.0.0",
+  "description": "Experiment: do clean code abstractions help coding agents?",
+  "scripts": {
+    "test:e2e": "node --test e2e/**/*.test.js",
+    "test:variant": "node --test e2e/**/*.test.js"
+  },
+  "devDependencies": {}
+}
