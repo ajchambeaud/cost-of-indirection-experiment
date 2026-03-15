@@ -144,34 +144,50 @@ complexity_test/
 ├── README.md                    ← this file
 ├── package.json                 ← root package (test runner deps)
 ├── run-tests.sh                 ← test runner script
-├── e2e/                         ← shared e2e test suite (30 tests)
+├── e2e/                         ← shared e2e test suite
 │   ├── helpers.js               ← HTTP client helpers
-│   ├── accounts.test.js         ← account CRUD + deposit/withdraw tests
-│   ├── transfers.test.js        ← transfer tests (atomicity, limits, concurrency)
-│   └── transactions.test.js     ← transaction history tests (filtering, ordering)
-├── variant-1-flat/              ← single file, everything inline
-├── variant-2-structured/        ← single file, classes and functions
-├── variant-3-multi-light/       ← multi-file, split by concern
-├── variant-4-multi-arch/        ← full architecture (repos, services, DTOs, DI)
-└── variant-5-hexagonal/         ← ports & adapters (TODO)
+│   ├── baseline/                ← baseline tests (30 tests, must always pass)
+│   └── tasks/multi-currency/    ← feature task tests (11 tests)
+├── tasks/                       ← agent task prompts
+│   └── multi-currency.prompt.md
+├── run-experiment.sh            ← full experiment automation
+├── results/                     ← experiment results (gitignored)
+├── variant-1-flat/              ← single file, everything inline (TypeScript)
+├── variant-2-structured/        ← single file, classes and functions (TypeScript)
+├── variant-3-multi-light/       ← multi-file, split by concern (TypeScript)
+├── variant-4-multi-arch/        ← full architecture (repos, services, DTOs, DI) (TypeScript)
+└── variant-5-hexagonal/         ← ports & adapters with TS interfaces (TypeScript)
 ```
 
 ## Current Status
 
-- [x] E2e test suite (30 tests)
-- [x] Variant 1 — flat (all tests passing)
-- [x] Variant 2 — structured (all tests passing)
-- [x] Variant 3 — multi-file light (all tests passing)
-- [x] Variant 4 — multi-file full architecture (all tests passing)
-- [ ] Variant 5 — hexagonal (ports & adapters)
-- [ ] Experiment runner script (automates runs + collects metrics)
-- [ ] Task prompts (standardized prompts for each feature task)
-- [ ] Results analysis
+- [x] E2e test suite (30 baseline + 11 task tests)
+- [x] All 5 variants in TypeScript (all baseline tests passing)
+- [x] Experiment runner script
+- [x] Multi-currency task prompt + tests
+- [x] First experiment run (3 runs × 5 variants, Sonnet 4.6)
+- [ ] Second experiment run (5 runs × 5 variants, Sonnet 4.6)
+- [ ] Additional tasks (recurring transfers, categories, webhooks)
 
-## Expected Outcomes (Hypotheses)
+## Results: Multi-Currency Task (Sonnet 4.6, 3 runs)
 
-- **Variant 1 (flat)** wins on token cost and speed for small tasks — one file to read, one file to edit
-- **Variant 5 (hexagonal)** costs the most tokens — many files to navigate, lots of indirection
-- **Heavy architecture hurts more than helps** — the agent spends tokens navigating indirection that exists for human long-term maintainability, not for a reader understanding the code right now
-- **Multi-file may win on correctness** for cross-cutting changes — file names act as semantic cues
-- The sweet spot is likely **variant 2 or 3** — enough structure for comprehension, not so much that navigation dominates
+Full report: `results/multi-currency/20260314-211052/REPORT.md`
+
+### Summary (median values)
+
+| Variant | Cost | Turns | Time | Files Changed | Task Pass Rate |
+|---|---|---|---|---|---|
+| 1. Flat | $0.22 | 10 | 78s | 1 | **3/3 (100%)** |
+| 2. Structured | $0.22 | 12 | 81s | 1 | **3/3 (100%)** |
+| 3. Multi-light | $0.26 | 16 | 100s | 5 | **3/3 (100%)** |
+| 4. Full arch | $0.43 | 22 | 149s | 9 | **3/3 (100%)** |
+| 5. Hexagonal | $0.73 | 31 | 225s | 12 | **1/3 (33%)** |
+
+### Key Findings
+
+1. **More abstraction = more cost, no correctness benefit.** Hexagonal costs 3.4x more than flat with worse reliability.
+2. **The agent's main cost is reading, not writing.** Hexagonal loads 5.3x more context tokens navigating files.
+3. **Single-file variants are essentially equivalent** ($0.22 both). Structure within one file is free.
+4. **The big cost jump is at variant 4** (full architecture). Repositories + DI doubles the cost.
+5. **Hexagonal hurts reliability.** 2/3 runs failed — too many layers to coordinate consistently.
+6. **Edit dispersion correlates with failure.** 12+ files changed → 33% success. 1-9 files → 100% success.
