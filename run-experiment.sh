@@ -82,7 +82,7 @@ for V in "${VARIANTS[@]}"; do
     CACHE_CREATE=$(echo "$AGENT_RESULT" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('usage',{}).get('cache_creation_input_tokens',0))" 2>/dev/null || echo "0")
     TOTAL_COST=$(echo "$AGENT_RESULT" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('total_cost_usd',0))" 2>/dev/null || echo "0")
     DURATION_MS=$(echo "$AGENT_RESULT" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('duration_ms',0))" 2>/dev/null || echo "0")
-    IS_ERROR=$(echo "$AGENT_RESULT" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('is_error',True))" 2>/dev/null || echo "True")
+    IS_ERROR=$(echo "$AGENT_RESULT" | python3 -c "import json,sys; d=json.load(sys.stdin); print(str(d.get('is_error',True)).lower())" 2>/dev/null || echo "true")
 
     # Write summary row
     SUMMARY="$RESULTS_DIR/${V}_run${RUN}_summary.json"
