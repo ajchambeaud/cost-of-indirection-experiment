@@ -1,10 +1,11 @@
 #!/bin/bash
 set -e
 
-TASK=${1:?Usage: ./run-experiment.sh <task-name> [variant] [runs] [model]}
+TASK=${1:?Usage: ./run-experiment.sh <task-name> [variant] [runs] [model] [max-turns]}
 VARIANT=${2:-all}
 RUNS=${3:-3}
 MODEL=${4:-sonnet}
+MAX_TURNS=${5:-30}
 RESULTS_DIR="results/${TASK}/$(date +%Y%m%d-%H%M%S)"
 
 mkdir -p "$RESULTS_DIR"
@@ -47,7 +48,7 @@ for V in "${VARIANTS[@]}"; do
       --output-format json \
       --model "$MODEL" \
       --allowedTools "Read Edit Write Glob Grep Bash" \
-      --max-turns 30 \
+      --max-turns "$MAX_TURNS" \
       --dangerously-skip-permissions \
       2>/dev/null) || true
 
