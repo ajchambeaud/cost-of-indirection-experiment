@@ -87,6 +87,7 @@ We use `claude -p "<task>" --output-format json` which returns:
 
 ```bash
 # Test a variant manually
+cd architecture/
 ./run-tests.sh variant-1-flat [port]
 
 # The runner:
@@ -111,6 +112,8 @@ After establishing the baseline (working API with all 30 tests passing), we give
 ### Running a Task Against a Variant
 
 ```bash
+cd architecture/
+
 # 1. Reset to baseline
 cd variant-X && git checkout .
 
@@ -142,21 +145,30 @@ git diff --name-only | wc -l
 ```
 complexity_test/
 ├── README.md                    ← this file
-├── package.json                 ← root package (test runner deps)
-├── run-tests.sh                 ← test runner script
-├── e2e/                         ← shared e2e test suite
-│   ├── helpers.js               ← HTTP client helpers
-│   ├── baseline/                ← baseline tests (30 tests, must always pass)
-│   └── tasks/multi-currency/    ← feature task tests (11 tests)
-├── tasks/                       ← agent task prompts
-│   └── multi-currency.prompt.md
-├── run-experiment.sh            ← full experiment automation
-├── results/                     ← experiment results (gitignored)
-├── variant-1-flat/              ← single file, everything inline (TypeScript)
-├── variant-2-structured/        ← single file, classes and functions (TypeScript)
-├── variant-3-multi-light/       ← multi-file, split by concern (TypeScript)
-├── variant-4-multi-arch/        ← full architecture (repos, services, DTOs, DI) (TypeScript)
-└── variant-5-hexagonal/         ← ports & adapters with TS interfaces (TypeScript)
+├── architecture/                ← experiment 1: architecture complexity
+│   ├── package.json             ← test runner deps
+│   ├── run-tests.sh             ← test runner script
+│   ├── run-experiment.sh        ← full experiment automation
+│   ├── e2e/                     ← shared e2e test suite
+│   │   ├── helpers.js           ← HTTP client helpers
+│   │   ├── baseline/            ← baseline tests (30 tests, must always pass)
+│   │   └── tasks/multi-currency/← feature task tests (11 tests)
+│   ├── tasks/                   ← agent task prompts
+│   │   └── multi-currency.prompt.md
+│   ├── results/                 ← experiment results (gitignored)
+│   ├── variant-1-flat/          ← single file, everything inline (TypeScript)
+│   ├── variant-2-structured/    ← single file, classes and functions (TypeScript)
+│   ├── variant-3-multi-light/   ← multi-file, split by concern (TypeScript)
+│   ├── variant-4-multi-arch/    ← full architecture (repos, services, DTOs, DI) (TypeScript)
+│   └── variant-5-hexagonal/     ← ports & adapters with TS interfaces (TypeScript)
+└── code-style/                  ← experiment 2: code style (inline vs abstracted)
+    ├── run-tests.sh
+    ├── run-experiment.sh
+    ├── fixtures/
+    ├── tests/
+    ├── tasks/
+    ├── variant-a-inline/
+    └── variant-b-abstracted/
 ```
 
 ## Current Status

@@ -26,6 +26,9 @@ echo "Runs per variant: $RUNS"
 echo "Results: $RESULTS_DIR"
 echo ""
 
+# Get the root of the git repo (parent of architecture/)
+GIT_ROOT=$(cd .. && pwd)
+
 for V in "${VARIANTS[@]}"; do
   echo "========================================"
   echo "Variant: $V"
@@ -35,10 +38,10 @@ for V in "${VARIANTS[@]}"; do
     echo ""
     echo "--- $V run $RUN/$RUNS ---"
 
-    # Reset to baseline
-    git checkout .
-    # Clean any new files the agent might have created in the variant
-    git clean -fd "$V/" 2>/dev/null || true
+    # Reset to baseline (reset the variant directory from git root)
+    (cd "$GIT_ROOT" && git checkout -- "architecture/$V/")
+    # Clean any new files the agent might have created
+    (cd "$GIT_ROOT" && git clean -fd "architecture/$V/" 2>/dev/null || true)
 
     # Pick a port that won't collide
     PORT=$((3100 + RANDOM % 900))
@@ -56,12 +59,10 @@ for V in "${VARIANTS[@]}"; do
     echo "$AGENT_RESULT" > "$RESULTS_DIR/${V}_run${RUN}_agent.json"
 
     # Capture git diff stats
-    GIT_DIFF_STAT=$(git diff --stat "$V/")
-    GIT_FILES_CHANGED=$(git diff --name-only "$V/" | wc -l | tr -d ' ')
-    GIT_LINES_ADDED=$(git diff --numstat "$V/" | awk '{s+=$1} END {print s+0}')
-    GIT_LINES_REMOVED=$(git diff --numstat "$V/" | awk '{s+=$1} END {print s+0}')
+    GIT_FILES_CHANGED=$(cd "$GIT_ROOT" && git diff --name-only "architecture/$V/" | wc -l | tr -d ' ')
+    GIT_LINES_ADDED=$(cd "$GIT_ROOT" && git diff --numstat "architecture/$V/" | awk '{s+=$1} END {print s+0}')
     # Also capture new files
-    GIT_NEW_FILES=$(git ls-files --others --exclude-standard "$V/" | wc -l | tr -d ' ')
+    GIT_NEW_FILES=$(cd "$GIT_ROOT" && git ls-files --others --exclude-standard "architecture/$V/" | wc -l | tr -d ' ')
 
     # Run baseline tests
     BASELINE_PASS=false
