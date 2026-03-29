@@ -133,23 +133,3 @@ code-style/
     └── ...
 ```
 
-## Results (Sonnet 4.6, 5 runs)
-
-Full report: `results/commission/20260318-210726/REPORT.md`
-
-| Variant | Turns | Cost | Time | Lines Added | New Files | Pass |
-|---|---|---|---|---|---|---|
-| A (Inline) | 7 | $0.13 | 61s | 86 | 0 | **5/5** |
-| B (Abstracted) | 12 | $0.13 | 50s | 3 | 1 | **5/5** |
-
-### Key Finding: Abstraction is cost-neutral
-
-**Same cost, same success rate.** The agent adapts its strategy:
-- In duplicated code → copy-paste-modify (more lines, fewer turns)
-- In abstracted code → compose utilities (fewer lines, more turns)
-
-The extra reading cost in variant B (understanding utilities) is offset by the reduced writing cost (shorter report code). Net result: identical cost.
-
-### Combined insight with Experiment 1
-
-**Abstraction ≠ indirection.** Shared utility functions (`groupBy`, `mean`) don't hurt the agent — they're cost-neutral. Architectural layers (ports → adapters → services → DI container) that force navigation across many files are what costs 2-3.5x more. The expensive thing isn't reuse, it's the number of files that must change for one feature.
