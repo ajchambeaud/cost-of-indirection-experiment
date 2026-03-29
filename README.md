@@ -69,4 +69,3 @@ cd code-style/
 ./run-experiment.sh commission all 5 sonnet 30
 ```
 
-See [`code-style/` README](code-style/README.md) for details.
